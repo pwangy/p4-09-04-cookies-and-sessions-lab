@@ -2,7 +2,7 @@
 
 from flask import Flask, make_response, jsonify, session
 from flask_migrate import Migrate
-from models import db, Article, User
+from models import db, Article
 
 app = Flask(__name__)
 app.secret_key = b'Y\xf1Xz\x00\xad|eQ\x80t \xca\x1a\x10K'
@@ -25,12 +25,13 @@ def index_articles():
 
 @app.route('/articles/<int:id>')
 def show_article(id):
-    session['views'] = session.get('views') or 0
-    session['views'] += 1
+    session['page_views'] = session.get('page_views') or 0
+    session['page_views'] += 1
 
-    if session[views] <= 3:
+    if session['page_views'] <= 3:
         return Article.query.filter(Article.id == id).first().to_dict(), 200
-    return {'message': 'Max page views reached'}, 401
+
+    return {'message': 'Maximum pageview limit reached'}, 401
 
 if __name__ == '__main__':
     app.run(port=5555)
